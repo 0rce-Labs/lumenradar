@@ -32,9 +32,12 @@ three-detector DSP pipeline (narrow-band periodicity, burst pulse-count
 structure, session-baseline comparison) fused with camera-artifact rejection
 into an explainable verdict. On synthetic calibration through an mp4 codec
 round-trip, the pipeline detects 2\,Hz modulation down to
-$\sim$4 gray levels peak-to-peak at 30\,fps with zero false positives on clean
-clips, and recovers blink-count symbol sequences exactly.
-\todo{real-hardware ROC numbers from the Mac dataset}
+$\sim$4 gray levels peak-to-peak at 30\,fps with zero false positives, and
+recovers blink-count symbol sequences exactly. On a real-hardware screen-recording
+dataset (Retina 2880$\times$1800, variable frame rate), all three positives are
+detected with no false positives after three genuine real-world defects ---
+screen-rendered beacons beyond LED-size heuristics, low-duty lead-in timing,
+and VFR spectral leakage --- surfaced by the data and were fixed
 \end{abstract}
 
 \section{Introduction}
@@ -128,8 +131,21 @@ control from the border ring.
 \section{Dataset Protocol}\label{sec:dataset}
 Clips follow a \texttt{pos\_/neg\_} naming contract; a SHA-256 manifest pins
 integrity; the evaluator runs the identical analysis path as the CLI.
-\todo{Mac recording: 2 devices $\times$ 3 lighting conditions, 30\,s clips,
-beacon positives; report ROC at FPR $\le 5\%$}
+Real-hardware results (6 clips: 3 positives, 3 negatives, Retina 2880$\times$1800
+screen recording, 24--52\,fps VFR): \textbf{3/3 positives detected}
+(2$\times$\textsf{signal\_detected} as \textsf{blink\_count} with symbol
+intervals recovered, 1$\times$\textsf{suspicious} \textsf{periodic} at the true
+1.8\,Hz), \textbf{0 false positives}. Capturing these numbers surfaced three
+real-world defects that synthetic data alone could not: the calibration beacon
+renders as a $\sim$300\,px solid bright square beyond the small-LED ROI
+heuristic (fixed with a class-aware beacon-square scan), low-duty blink
+patterns need a wider ROI probe window (first ON frame at 0.65\,s), and
+variable-frame-rate capture turns a strong tone's spectral skirt wide enough
+to defeat local-floor ratios (fixed with a strong-amplitude$\,+\,$harmonic
+bypass, and a sustained-power gate that rejects step-edge transients ---
+measured 0.05 vs 1.00 sustained-fraction separation). Remaining for the
+journal version: scaled-up dataset (2 devices $\times$ 3 lighting, $\ge$60
+clips) and formal ROC.
 
 \section{Synthetic Calibration (preliminary)}
 Config: 30\,fps, 6\,s clips, structured background scene, 16$\times$16 LED,
