@@ -1,0 +1,118 @@
+{
+  "experiment": "depth_sweep",
+  "config": {
+    "fps": 30.0,
+    "seconds": 6.0,
+    "freq_hz": 2.0,
+    "codec": "mp4v"
+  },
+  "positive": [
+    {
+      "amp_gray": 0.5,
+      "tpr": 0.0,
+      "hits": 0,
+      "n": 5,
+      "peak_freqs": [
+        1.0,
+        0.833,
+        0.667,
+        0.667,
+        0.667
+      ]
+    },
+    {
+      "amp_gray": 1.0,
+      "tpr": 0.0,
+      "hits": 0,
+      "n": 5,
+      "peak_freqs": [
+        1.0,
+        0.833,
+        0.667,
+        0.667,
+        0.667
+      ]
+    },
+    {
+      "amp_gray": 2.0,
+      "tpr": 0.4,
+      "hits": 2,
+      "n": 5,
+      "peak_freqs": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "amp_gray": 4.0,
+      "tpr": 1.0,
+      "hits": 5,
+      "n": 5,
+      "peak_freqs": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "amp_gray": 8.0,
+      "tpr": 1.0,
+      "hits": 5,
+      "n": 5,
+      "peak_freqs": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "amp_gray": 16.0,
+      "tpr": 1.0,
+      "hits": 5,
+      "n": 5,
+      "peak_freqs": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "amp_gray": 32.0,
+      "tpr": 1.0,
+      "hits": 5,
+      "n": 5,
+      "peak_freqs": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "amp_gray": 64.0,
+      "tpr": 1.0,
+      "hits": 5,
+      "n": 5,
+      "peak_freqs": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    }
+  ],
+  "clean_fpr": 0.0,
+  "clean_n": 10,
+  "note": "synthetic-only calibration; real-hardware evaluation pending"
+}

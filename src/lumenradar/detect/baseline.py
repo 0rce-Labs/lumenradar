@@ -17,6 +17,8 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.special import polygamma
 
+from .periodicity import MIN_AMP_GRAY
+
 BASELINE_S = 2.0
 Z_MIN = 5.0
 SMOOTH_L = 5
@@ -32,6 +34,7 @@ class BaselineResult:
     candidate_s: float
     z: float
     peak_freq: float | None
+    amplitude: float
     detected: bool
     sufficient: bool
 
@@ -54,7 +57,7 @@ def baseline_compare(
     fps = float(fps)
     n_base = int(round(baseline_s * fps))
     cand_n = x.size - n_base
-    insufficient = BaselineResult(0.0, 0.0, 0.0, None, False, False)
+    insufficient = BaselineResult(0.0, 0.0, 0.0, None, 0.0, False, False)
     # Integer-based minimums: container FPS values like 30.000029 must not
     # turn "exactly 2 s of baseline" into an insufficiency via float compare.
     if n_base < int(round(MIN_BASE_FRAMES_FACTOR * fps)) or cand_n < int(round(MIN_CAND_S * fps)):
@@ -88,12 +91,17 @@ def baseline_compare(
     ratio = float(ratios[k])
     sigma = float(np.sqrt(2.0 * float(polygamma(1, SMOOTH_L))))
     z = float(np.log(max(ratio, 1e-12)) / sigma)
-    detected = bool(ratio > 1.0 and z >= z_min)
+    # Amplitude gate (same principle as M1): with a near-zero-energy baseline
+    # the PSD ratio can explode on pure codec/quantization noise. A real
+    # onset must also be PERCEPTIBLE — >= MIN_AMP_GRAY gray levels.
+    amp = 4.0 * float(np.sqrt(max(float(cand_psd[band][k]), 0.0))) / n_base
+    detected = bool(ratio > 1.0 and z >= z_min and amp >= MIN_AMP_GRAY)
     return BaselineResult(
         baseline_s=round(n_base / fps, 3),
         candidate_s=round(cand_n / fps, 3),
         z=round(z, 2),
         peak_freq=peak_freq,
+        amplitude=round(amp, 4),
         detected=detected,
         sufficient=True,
     )

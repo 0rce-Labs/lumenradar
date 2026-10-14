@@ -68,6 +68,7 @@ def build_verdict(series: LuminanceSeries, control: LuminanceSeries | None) -> V
             "available": m3.sufficient,
             "z": m3.z,
             "peak_freq_hz": m3.peak_freq,
+            "amplitude": m3.amplitude,
             "detected": m3.detected,
         },
         "artifacts": {

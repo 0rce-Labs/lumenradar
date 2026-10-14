@@ -40,3 +40,17 @@ def test_insufficient_session():
     r = baseline_compare(np.zeros(int(3 * 30), dtype=np.float32), 30.0)
     assert not r.sufficient
     assert not r.detected
+
+
+def test_tiny_noise_onset_not_detected():
+    """Near-zero-energy onset: huge z on codec noise must NOT fire (amp gate)."""
+    fps = 30.0
+    n = int(8 * fps)
+    rng = np.random.default_rng(2)
+    x = (0.02 * rng.standard_normal(n)).astype(np.float32)
+    x[int(2 * fps) :] += 0.04 * np.sin(2 * np.pi * 1.0 * np.arange(n - int(2 * fps)) / fps)
+    r = baseline_compare(x, fps)
+    assert r.sufficient
+    assert r.z >= 5.0  # spectral test alone would fire
+    assert r.amplitude < 0.5
+    assert not r.detected  # amplitude gate rejects it
