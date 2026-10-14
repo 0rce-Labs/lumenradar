@@ -59,6 +59,10 @@ ruff check src tests
 Development and testing are fully camera-less: synthetic test videos are generated
 in-process (`lumenradar.synth`).
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
 ## Status
 
 v0.2.0 — detection engine live: M1 band periodicity, M2 burst pulse-count,
