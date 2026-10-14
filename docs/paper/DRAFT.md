@@ -88,6 +88,30 @@ protocol (2-3 lighting conditions, 30 s clips, beacon for positives on the
 defender's own hardware). Synthetic clips are unit-test/calibration only and
 never count as evaluation rows.
 
+**Real-hardware results (Mac dataset, 14 Oct 2026):** 6 clips (3 pos, 3 neg),
+Retina 2880×1800 screen recording, 24-52 fps variable frame rate.
+**3/3 positives detected, 0 false positives** (at the `suspicious`
+threshold: 2× `signal_detected`/`blink_count` with symbol timing recovered,
+1× `suspicious`/`periodic` at the true 1.8 Hz). The dataset surfaced three
+genuine defects synthetic data could not:
+
+1. The calibration beacon renders as a **~300 px solid bright square** —
+   beyond the small-LED ROI heuristic (which instead anchored on 2×2 sensor
+   specks). Fixed: class-aware beacon-square scan (`allow_large_beacon`)
+   prioritized over the speck path.
+2. **Low-duty blink lead-in:** the first ON frame arrives at #39 (0.65 s);
+   a 15-frame probe window found nothing. Fixed: beacon scan widened to
+   180 frames.
+3. **VFR spectral leakage:** uneven frame pacing (16.7-133 ms dt) spreads a
+   69-gray 2 Hz tone's energy across thousands of bins, collapsing the
+   local-floor ratio to 2.43. Fixed: strong-amplitude (≥ 8 gray) +
+   harmonic-confirmed bypass.
+4. (Post-dataset addition) **Sustained-power gate:** a one-off UI element
+   vanishing at 10 s produced a step-edge transient that fired M3 (z=21.9);
+   sustained-power fraction separates it from real beacons (0.05 vs 1.00).
+
+Full per-clip results: `docs/paper/results/mac_redetect.json`.
+
 ## 6. Synthetic Calibration (preliminary)
 
 Config: 640×480 scene with structured background, LED ROI 16×16, 30 fps,
