@@ -1,0 +1,42 @@
+{
+  "directory": "/Users/x13/lumenradar-dataset",
+  "count": 6,
+  "rows": [
+    {
+      "path": "/Users/x13/lumenradar-dataset/neg_clean_mac_bright.mp4",
+      "label": "clean",
+      "sha256_16": "92b6b7b59fb824a5",
+      "bytes": 12590840
+    },
+    {
+      "path": "/Users/x13/lumenradar-dataset/neg_dark_mac_dim.mp4",
+      "label": "clean",
+      "sha256_16": "f76ec90d12ace8b9",
+      "bytes": 7183721
+    },
+    {
+      "path": "/Users/x13/lumenradar-dataset/neg_lamp_mac_bright.mp4",
+      "label": "clean",
+      "sha256_16": "d94e6d30c3073bef",
+      "bytes": 7582448
+    },
+    {
+      "path": "/Users/x13/lumenradar-dataset/pos_blink_mac_bright.mp4",
+      "label": "signal",
+      "sha256_16": "987113af7be12748",
+      "bytes": 16465979
+    },
+    {
+      "path": "/Users/x13/lumenradar-dataset/pos_blink_mac_dim.mp4",
+      "label": "signal",
+      "sha256_16": "90a0e806f5971604",
+      "bytes": 18736401
+    },
+    {
+      "path": "/Users/x13/lumenradar-dataset/pos_sine2_mac_bright.mp4",
+      "label": "signal",
+      "sha256_16": "55b8eb1d6233b64e",
+      "bytes": 20510468
+    }
+  ]
+}

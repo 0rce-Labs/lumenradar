@@ -26,13 +26,36 @@ def ring_box(width: int, height: int, keep: float = 0.8) -> ROI:
     return ROI(mx, my, width - 2 * mx, height - 2 * my)
 
 
-def resolve_roi(video: str, manual: ROI | None) -> tuple[ROI | None, str]:
-    """ROI resolution order: manual override > stable auto-LED > full-frame."""
+def resolve_roi(
+    video: str,
+    manual: ROI | tuple[int, int, int, int] | None,
+    allow_large_beacon: bool = True,
+) -> tuple[ROI | None, str]:
+    """ROI resolution: manual > auto small-LED > auto beacon-square > full-frame.
+
+    The beacon-square step exists because the calibration beacon renders as a
+    ~300 px solid bright square — far above the small-LED blob threshold. The
+    real-hardware dataset showed auto-ROI missing it entirely (ROI fell to the
+    full-frame path where the beacon itself pollutes the AE control channel).
+    """
     if manual is not None:
+        if isinstance(manual, tuple):
+            from .roi import manual_roi
+
+            manual = manual_roi(manual)
         return manual, "manual"
+    beacon = stable_roi(video, allow_large_beacon=True) if allow_large_beacon else None
     auto = stable_roi(video)
+    # Prefer the beacon square: the small-blob scan on a screen-recording
+    # returns 1-2 px sensor specks (dozens of them per frame); when a beacon
+    # square is genuinely present it IS the signal carrier and the small-blob
+    # path would analyze sensor noise instead.
+    if beacon is not None and beacon.score >= 0.05:
+        return beacon, "auto_beacon"
     if auto is not None:
         return auto, "auto"
+    if beacon is not None:
+        return beacon, "auto_beacon"
     return None, "fullframe"
 
 

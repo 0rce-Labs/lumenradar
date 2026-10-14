@@ -27,6 +27,7 @@ RATIO_MIN = 8.0
 RATIO_STRONG = 20.0
 HARMONIC_FACTOR = 3.0
 MIN_AMP_GRAY = 0.5
+STRONG_AMP_GRAY = 8.0  # strong-amp bypass for leaky (VFR-capture) spectra
 LOCAL_FLOOR_SPAN = 3  # +- this many bins around the peak
 
 
@@ -104,7 +105,20 @@ def band_periodicity(
 
     n_bins = int(band.sum())
     expected_max = float(np.log(n_bins) + 0.5772)  # E[max of n unit exponentials]
-    detected = (ratio >= RATIO_MIN and harmonic_ok is True) or ratio >= 2.0 * expected_max
+    # Strong-amplitude bypass: for REAL captures with uneven frame pacing
+    # (variable-frame-rate screen recordings), spectral leakage spreads the
+    # tone's own energy into thousands of neighboring bins, collapsing the
+    # local-floor ratio (measured: 69.5-gray 2 Hz tone at ratio 2.43 — the
+    # "floor" was the tone's own skirt, not noise). A perceptually strong
+    # oscillation with harmonic confirmation is a signal regardless of skirt
+    # shape. The amplitude gate (69 gray ≫ 8 gray floor) is itself the
+    # false-positive protector: sensor noise cannot reach it.
+    strong_amp_bypass = amp >= STRONG_AMP_GRAY and harmonic_ok is True
+    detected = (
+        (ratio >= RATIO_MIN and harmonic_ok is True)
+        or ratio >= 2.0 * expected_max
+        or strong_amp_bypass
+    )
     strong = ratio >= RATIO_STRONG
     return PeriodicityResult(
         round(peak_freq, 3), round(ratio, 2), round(amp, 4), harmonic_ok, strong, detected

@@ -1,0 +1,65 @@
+{
+  "tool": "lumenradar",
+  "version": "0.2.0",
+  "source": {
+    "path": "pos_blink_mac_dim.mp4",
+    "width": 2880,
+    "height": 1800,
+    "fps": 43.052,
+    "frame_count": 1293
+  },
+  "roi": {
+    "mode": "auto",
+    "x": 763,
+    "y": 1549,
+    "w": 2,
+    "h": 2
+  },
+  "series": {
+    "n": 1293,
+    "duration_s": 30.01,
+    "effective_fps": 43.05
+  },
+  "stats": {
+    "residual_std": 3.647,
+    "residual_min": -53.5,
+    "residual_max": 53.5
+  },
+  "detection": {
+    "status": "suspicious",
+    "confidence": 0.75,
+    "signal_class": null,
+    "peak_freq_hz": 2.098,
+    "evidence": {
+      "m1_periodicity": {
+        "peak_freq_hz": 2.098,
+        "ratio": 1.0,
+        "harmonic_ok": false,
+        "detected": false
+      },
+      "m2_burst": {
+        "pulses": 7,
+        "symbol_counts": [
+          4,
+          3
+        ],
+        "symbol_repeats": false,
+        "timing_regular": false,
+        "detected": false
+      },
+      "m3_baseline": {
+        "available": true,
+        "z": 10.55,
+        "peak_freq_hz": 11.013,
+        "amplitude": 0.5394,
+        "detected": true
+      },
+      "artifacts": {
+        "type": null,
+        "roi_control_correlation": 0.125,
+        "control_ratio": 0.45
+      }
+    }
+  },
+  "plot": "pos_blink_mac_dim.png"
+}

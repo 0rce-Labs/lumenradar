@@ -1,0 +1,62 @@
+{
+  "tool": "lumenradar",
+  "version": "0.2.0",
+  "source": {
+    "path": "pos_blink_mac_bright.mp4",
+    "width": 2880,
+    "height": 1800,
+    "fps": 50.785,
+    "frame_count": 1532
+  },
+  "roi": {
+    "mode": "auto",
+    "x": 1499,
+    "y": 869,
+    "w": 2,
+    "h": 2
+  },
+  "series": {
+    "n": 1532,
+    "duration_s": 30.147,
+    "effective_fps": 50.78
+  },
+  "stats": {
+    "residual_std": 0.1585,
+    "residual_min": -2.5,
+    "residual_max": 1.75
+  },
+  "detection": {
+    "status": "clean",
+    "confidence": 0.9,
+    "signal_class": null,
+    "peak_freq_hz": null,
+    "evidence": {
+      "m1_periodicity": {
+        "peak_freq_hz": 1.061,
+        "ratio": 0.0,
+        "harmonic_ok": null,
+        "detected": false
+      },
+      "m2_burst": {
+        "pulses": 2,
+        "symbol_counts": [],
+        "symbol_repeats": false,
+        "timing_regular": false,
+        "detected": false
+      },
+      "m3_baseline": {
+        "available": true,
+        "z": -2.08,
+        "peak_freq_hz": 0.996,
+        "amplitude": 0.0094,
+        "detected": false
+      },
+      "artifacts": {
+        "type": null,
+        "roi_control_correlation": 0.037,
+        "control_ratio": 10.24
+      }
+    }
+  },
+  "plot": "pos_blink_mac_bright.png"
+}

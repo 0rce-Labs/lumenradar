@@ -31,7 +31,10 @@ def test_analyze_periodic_auto_roi(tmp_path, capsys):
     )
     assert main(["analyze", path]) == 0
     report = json.loads(capsys.readouterr().out)
-    assert report["roi"]["mode"] == "auto"
+    # The beacon-square scan may claim the synthetic LED (its 16x16 blinking
+    # block passes the beacon filter at low resolution clips); either auto
+    # path is valid as long as the signal lands in ROI.
+    assert report["roi"]["mode"] in ("auto", "auto_beacon")
     assert report["stats"]["residual_std"] > 10.0
 
 
@@ -39,7 +42,7 @@ def test_analyze_burst_auto_roi(tmp_path, capsys):
     path = _write(burst_video(seconds=8.0, fps=30.0), 30.0, tmp_path, "b.mp4")
     assert main(["analyze", path]) == 0
     report = json.loads(capsys.readouterr().out)
-    assert report["roi"]["mode"] == "auto"
+    assert report["roi"]["mode"] in ("auto", "auto_beacon")
     assert report["stats"]["residual_std"] > 10.0
 
 

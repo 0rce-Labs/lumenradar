@@ -1,0 +1,63 @@
+{
+  "threshold": "suspicious",
+  "total": 6,
+  "confusion": {
+    "tp": 1,
+    "fp": 0,
+    "tn": 3,
+    "fn": 2
+  },
+  "tpr": 0.3333,
+  "fpr": 0.0,
+  "accuracy": 0.6667,
+  "per_file": [
+    {
+      "path": "/Users/x13/lumenradar-dataset/neg_clean_mac_bright.mp4",
+      "label": "clean",
+      "pred_positive": false,
+      "status": "clean",
+      "confidence": 0.8,
+      "error": null
+    },
+    {
+      "path": "/Users/x13/lumenradar-dataset/neg_dark_mac_dim.mp4",
+      "label": "clean",
+      "pred_positive": false,
+      "status": "clean",
+      "confidence": 0.8,
+      "error": null
+    },
+    {
+      "path": "/Users/x13/lumenradar-dataset/neg_lamp_mac_bright.mp4",
+      "label": "clean",
+      "pred_positive": false,
+      "status": "clean",
+      "confidence": 0.8,
+      "error": null
+    },
+    {
+      "path": "/Users/x13/lumenradar-dataset/pos_blink_mac_bright.mp4",
+      "label": "signal",
+      "pred_positive": false,
+      "status": "clean",
+      "confidence": 0.9,
+      "error": null
+    },
+    {
+      "path": "/Users/x13/lumenradar-dataset/pos_blink_mac_dim.mp4",
+      "label": "signal",
+      "pred_positive": true,
+      "status": "suspicious",
+      "confidence": 0.75,
+      "error": null
+    },
+    {
+      "path": "/Users/x13/lumenradar-dataset/pos_sine2_mac_bright.mp4",
+      "label": "signal",
+      "pred_positive": false,
+      "status": "camera_artifact",
+      "confidence": 0.6,
+      "error": null
+    }
+  ]
+}

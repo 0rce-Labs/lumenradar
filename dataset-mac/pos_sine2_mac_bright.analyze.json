@@ -1,0 +1,60 @@
+{
+  "tool": "lumenradar",
+  "version": "0.2.0",
+  "source": {
+    "path": "pos_sine2_mac_bright.mp4",
+    "width": 2880,
+    "height": 1800,
+    "fps": 52.071,
+    "frame_count": 1563
+  },
+  "roi": {
+    "mode": "fullframe"
+  },
+  "series": {
+    "n": 1562,
+    "duration_s": 29.978,
+    "effective_fps": 52.07
+  },
+  "stats": {
+    "residual_std": 1.7432,
+    "residual_min": -3.9043,
+    "residual_max": 2.9351
+  },
+  "detection": {
+    "status": "camera_artifact",
+    "confidence": 0.6,
+    "signal_class": null,
+    "peak_freq_hz": null,
+    "evidence": {
+      "m1_periodicity": {
+        "peak_freq_hz": 1.8,
+        "ratio": 2.48,
+        "harmonic_ok": true,
+        "detected": false
+      },
+      "m2_burst": {
+        "pulses": 58,
+        "symbol_counts": [
+          58
+        ],
+        "symbol_repeats": false,
+        "timing_regular": false,
+        "detected": false
+      },
+      "m3_baseline": {
+        "available": true,
+        "z": 3.36,
+        "peak_freq_hz": 4.005,
+        "amplitude": 0.2452,
+        "detected": false
+      },
+      "artifacts": {
+        "type": "ae_hunting",
+        "roi_control_correlation": 0.997,
+        "control_ratio": 1.103
+      }
+    }
+  },
+  "plot": "pos_sine2_mac_bright.png"
+}

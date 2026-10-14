@@ -1,0 +1,290 @@
+[
+ {
+  "name": "neg_clean_mac_bright.mp4",
+  "roi_mode": "auto",
+  "det": {
+   "status": "suspicious",
+   "confidence": 0.75,
+   "signal_class": null,
+   "peak_freq_hz": 12.306,
+   "evidence": {
+    "m1_periodicity": {
+     "peak_freq_hz": 12.306,
+     "ratio": 1.0,
+     "harmonic_ok": null,
+     "detected": false
+    },
+    "m2_burst": {
+     "pulses": 7,
+     "symbol_counts": [
+      4,
+      3
+     ],
+     "symbol_repeats": false,
+     "timing_regular": false,
+     "detected": false
+    },
+    "m3_baseline": {
+     "available": true,
+     "z": 21.94,
+     "peak_freq_hz": 11.909,
+     "amplitude": 5.1425,
+     "detected": true
+    },
+    "artifacts": {
+     "type": null,
+     "roi_control_correlation": 0.549,
+     "control_ratio": 0.003
+    }
+   }
+  }
+ },
+ {
+  "name": "neg_dark_mac_dim.mp4",
+  "roi_mode": "auto",
+  "det": {
+   "status": "clean",
+   "confidence": 0.8,
+   "signal_class": null,
+   "peak_freq_hz": null,
+   "evidence": {
+    "m1_periodicity": {
+     "peak_freq_hz": 0.899,
+     "ratio": 0.0,
+     "harmonic_ok": null,
+     "detected": false
+    },
+    "m2_burst": {
+     "pulses": 5,
+     "symbol_counts": [
+      3,
+      2
+     ],
+     "symbol_repeats": false,
+     "timing_regular": false,
+     "detected": false
+    },
+    "m3_baseline": {
+     "available": true,
+     "z": 72.77,
+     "peak_freq_hz": 1.989,
+     "amplitude": 0.1145,
+     "detected": false
+    },
+    "artifacts": {
+     "type": null,
+     "roi_control_correlation": 0.05,
+     "control_ratio": 0.368
+    }
+   }
+  }
+ },
+ {
+  "name": "neg_lamp_mac_bright.mp4",
+  "roi_mode": "auto",
+  "det": {
+   "status": "clean",
+   "confidence": 0.8,
+   "signal_class": null,
+   "peak_freq_hz": null,
+   "evidence": {
+    "m1_periodicity": {
+     "peak_freq_hz": 0.634,
+     "ratio": 0.0,
+     "harmonic_ok": null,
+     "detected": false
+    },
+    "m2_burst": {
+     "pulses": 3,
+     "symbol_counts": [],
+     "symbol_repeats": false,
+     "timing_regular": false,
+     "detected": false
+    },
+    "m3_baseline": {
+     "available": true,
+     "z": 71.98,
+     "peak_freq_hz": 0.984,
+     "amplitude": 0.1415,
+     "detected": false
+    },
+    "artifacts": {
+     "type": null,
+     "roi_control_correlation": 0.005,
+     "control_ratio": 0.47
+    }
+   }
+  }
+ },
+ {
+  "name": "pos_blink_mac_bright.mp4",
+  "roi_mode": "auto_beacon",
+  "det": {
+   "status": "signal_detected",
+   "confidence": 0.85,
+   "signal_class": "blink_count",
+   "peak_freq_hz": 0.862,
+   "evidence": {
+    "m1_periodicity": {
+     "peak_freq_hz": 0.862,
+     "ratio": 8.79,
+     "harmonic_ok": true,
+     "detected": true
+    },
+    "m2_burst": {
+     "pulses": 70,
+     "symbol_counts": [
+      3,
+      4,
+      1,
+      2,
+      3,
+      4,
+      1,
+      2,
+      3,
+      4,
+      1,
+      2,
+      3,
+      4,
+      1,
+      2,
+      3,
+      4,
+      1,
+      2,
+      3,
+      4,
+      1,
+      2,
+      3,
+      4,
+      1,
+      2
+     ],
+     "symbol_repeats": true,
+     "timing_regular": true,
+     "detected": true
+    },
+    "m3_baseline": {
+     "available": true,
+     "z": 1.21,
+     "peak_freq_hz": 8.464,
+     "amplitude": 20.8397,
+     "detected": false
+    },
+    "artifacts": {
+     "type": null,
+     "roi_control_correlation": 0.897,
+     "control_ratio": 0.0
+    }
+   }
+  }
+ },
+ {
+  "name": "pos_blink_mac_dim.mp4",
+  "roi_mode": "auto_beacon",
+  "det": {
+   "status": "signal_detected",
+   "confidence": 0.85,
+   "signal_class": "blink_count",
+   "peak_freq_hz": 0.633,
+   "evidence": {
+    "m1_periodicity": {
+     "peak_freq_hz": 0.633,
+     "ratio": 12.14,
+     "harmonic_ok": true,
+     "detected": true
+    },
+    "m2_burst": {
+     "pulses": 67,
+     "symbol_counts": [
+      2,
+      1,
+      2,
+      3,
+      4,
+      1,
+      2,
+      3,
+      4,
+      1,
+      2,
+      3,
+      4,
+      1,
+      2,
+      3,
+      4,
+      1,
+      2,
+      3,
+      4,
+      1,
+      2,
+      3,
+      4,
+      1,
+      2,
+      2
+     ],
+     "symbol_repeats": true,
+     "timing_regular": true,
+     "detected": true
+    },
+    "m3_baseline": {
+     "available": true,
+     "z": 2.13,
+     "peak_freq_hz": 6.007,
+     "amplitude": 37.0485,
+     "detected": false
+    },
+    "artifacts": {
+     "type": null,
+     "roi_control_correlation": 0.338,
+     "control_ratio": 0.001
+    }
+   }
+  }
+ },
+ {
+  "name": "pos_sine2_mac_bright.mp4",
+  "roi_mode": "auto_beacon",
+  "det": {
+   "status": "suspicious",
+   "confidence": 0.7,
+   "signal_class": "periodic",
+   "peak_freq_hz": 1.8,
+   "evidence": {
+    "m1_periodicity": {
+     "peak_freq_hz": 1.8,
+     "ratio": 2.43,
+     "harmonic_ok": true,
+     "detected": true
+    },
+    "m2_burst": {
+     "pulses": 58,
+     "symbol_counts": [
+      58
+     ],
+     "symbol_repeats": false,
+     "timing_regular": false,
+     "detected": false
+    },
+    "m3_baseline": {
+     "available": true,
+     "z": 3.42,
+     "peak_freq_hz": 4.005,
+     "amplitude": 12.4345,
+     "detected": false
+    },
+    "artifacts": {
+     "type": null,
+     "roi_control_correlation": 0.379,
+     "control_ratio": 0.001
+    }
+   }
+  }
+ }
+]
