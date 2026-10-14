@@ -139,6 +139,40 @@ def periodic_video(
     return arr
 
 
+def noisy_video(
+    seconds: float = 6.0, fps: float = 30.0, sigma: float = 4.0, seed: int = 11, **kw: Any
+) -> np.ndarray:
+    """Clean scene with elevated per-frame sensor noise (noise-FP test class)."""
+    scene = Scene(seed=seed, **kw)
+    n = int(seconds * fps)
+    arr = _render(scene, np.zeros(n, dtype=np.float32))
+    rng = np.random.default_rng(seed + 1)
+    noise = rng.normal(0.0, sigma, arr.shape).astype(np.float32)
+    return np.clip(arr.astype(np.float32) + noise, 0, 255).astype(np.uint8)
+
+
+def global_osc_video(
+    freq: float = 2.0,
+    seconds: float = 6.0,
+    fps: float = 30.0,
+    amplitude: float = 10.0,
+    seed: int = 5,
+    **kw: Any,
+) -> np.ndarray:
+    """Whole-frame brightness oscillation — the auto-exposure ('AE-hunting') FP class.
+
+    The camera's exposure control modulates every pixel together with the scene,
+    so ROI and full-frame luminance move in lockstep. The artifact-rejection
+    layer must classify this as a camera artifact, not a localized LED signal.
+    """
+    scene = Scene(seed=seed, **kw)
+    n = int(seconds * fps)
+    base = _render(scene, np.zeros(n, dtype=np.float32)).astype(np.float32)
+    scale = 1.0 + (amplitude / 100.0) * np.sin(2 * math.pi * freq * np.arange(n) / fps)
+    out = np.clip(base * scale[:, None, None, None], 0, 255)
+    return out.astype(np.uint8)
+
+
 def burst_video(
     pattern: Sequence[int] = (1, 1, 2, 1, 2, 1, 2),
     seconds: float = 8.0,

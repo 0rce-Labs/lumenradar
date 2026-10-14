@@ -21,7 +21,7 @@ def test_analyze_clean_fullframe(tmp_path):
     assert report["tool"] == "lumenradar"
     assert report["source"]["frame_count"] == 60
     assert report["roi"]["mode"] == "fullframe"  # no LED visible -> control channel
-    assert report["detection"]["status"] == "not_implemented"
+    assert report["detection"]["status"] == "clean"
     assert report["stats"]["residual_std"] < 2.0
 
 

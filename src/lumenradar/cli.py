@@ -11,6 +11,7 @@ from . import __version__
 from .ingest import probe as probe_source
 from .roi import ROI, manual_roi, stable_roi
 from .signal import extract_series
+from .verdict import build_verdict
 
 
 def _parse_roi(text: str) -> ROI:
@@ -80,11 +81,17 @@ def cmd_analyze(args: argparse.Namespace) -> int:
     try:
         roi, mode = _resolve_roi(args.video, args.roi)
         series = extract_series(args.video, roi=roi, max_fps=args.max_fps)
+        control = (
+            extract_series(args.video, roi=None, exclude=roi, max_fps=args.max_fps)
+            if roi
+            else None
+        )
     except (FileNotFoundError, ValueError) as exc:
         _emit({"error": str(exc)}, None)
         return 2
 
     resid = series.detrend()
+    verdict = build_verdict(series, control)
     report = {
         "tool": "lumenradar",
         "version": __version__,
@@ -106,11 +113,7 @@ def cmd_analyze(args: argparse.Namespace) -> int:
             "residual_min": round(float(resid.min()), 4),
             "residual_max": round(float(resid.max()), 4),
         },
-        "detection": {
-            "status": "not_implemented",
-            "engine": "faz2",
-            "note": "detection engine (periodicity/burst/baseline) lands in Faz 2",
-        },
+        "detection": verdict.as_dict(),
     }
     _emit(report, args.json_out)
     return 0
