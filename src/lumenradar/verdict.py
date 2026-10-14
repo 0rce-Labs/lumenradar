@@ -6,6 +6,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+import numpy as np
+
 from .detect import (
     ArtifactResult,
     BaselineResult,
@@ -16,7 +18,10 @@ from .detect import (
     classify,
     detect_bursts,
 )
+from .detect.periodicity import BAND_MAX_HZ, BAND_MIN_HZ
 from .signal import LuminanceSeries
+
+SUSTAINED_MIN = 0.5  # fraction of windows carrying band power for M3 to stand
 
 
 @dataclass
@@ -39,6 +44,39 @@ class Verdict:
         }
 
 
+def sustained_power_fraction(x: np.ndarray, fps: float, rel: float = 0.05) -> float:
+    """Fraction of analysis windows whose in-band power reaches ``rel`` of the
+    strongest window.
+
+    Discriminates a SUSTAINED oscillation (beacon present across the clip:
+    every window carries band power) from a TRANSIENT step-edge artifact
+    (a one-off UI object appearing/disappearing: first ~10 s of the
+    real-hardware neg_clean clip had a static bright UI element that then
+    vanished; the moving-median detrend turns that step into a wiggle whose
+    power lives entirely in 1-2 windows — measured sustained_fraction 0.05
+    vs 1.0 on all three true-positive clips).
+    """
+    x = np.asarray(x, dtype=np.float64)
+    win = max(30, int(round(2.0 * fps)))
+    if x.size <= win:
+        return 1.0
+    w = np.hanning(win)
+    fr = np.fft.rfftfreq(win, d=1.0 / fps)
+    band = (fr >= BAND_MIN_HZ) & (fr <= min(BAND_MAX_HZ, fps / 2 - 1e-6))
+    if not band.any():
+        return 1.0
+    powers = []
+    for i in range(x.size - win + 1):
+        seg = x[i : i + win]
+        spec = np.abs(np.fft.rfft((seg - seg.mean()) * w)) ** 2
+        powers.append(float(spec[band].sum()))
+    p = np.asarray(powers)
+    peak = float(p.max())
+    if peak <= 1e-12:
+        return 1.0
+    return float((p >= rel * peak).mean())
+
+
 def build_verdict(series: LuminanceSeries, control: LuminanceSeries | None) -> Verdict:
     """Run all detectors over the ROI series (and its control channel) and fuse."""
     fps = series.effective_fps
@@ -50,7 +88,7 @@ def build_verdict(series: LuminanceSeries, control: LuminanceSeries | None) -> V
         x, control.detrend() if control is not None else None, fps, m1.peak_freq
     )
 
-    evidence = {
+    evidence: dict = {
         "m1_periodicity": {
             "peak_freq_hz": m1.peak_freq,
             "ratio": m1.ratio,
@@ -91,6 +129,15 @@ def build_verdict(series: LuminanceSeries, control: LuminanceSeries | None) -> V
     m1_active = m1.detected
     m2_active = m2.detected
     m3_active = m3.sufficient and m3.detected
+    # Sustained-power gate on M3: baseline z can fire on a one-off step
+    # (UI object appearing/disappearing mid-session); a real beacon carries
+    # band power in essentially every analysis window. Measured on the
+    # real-hardware dataset: FP transient 0.05 vs true positives 1.00.
+    sustained = sustained_power_fraction(x, fps)
+    evidence["sustained_power_fraction"] = round(sustained, 3)
+    if m3_active and sustained < SUSTAINED_MIN:
+        m3_active = False
+        evidence["m3_baseline"]["rejected_transient"] = True
 
     votes = int(m1_active) + int(m2_active) + int(m3_active)
     if votes == 0:

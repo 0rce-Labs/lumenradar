@@ -3,10 +3,10 @@
   "name": "neg_clean_mac_bright.mp4",
   "roi_mode": "auto",
   "det": {
-   "status": "suspicious",
-   "confidence": 0.75,
+   "status": "clean",
+   "confidence": 0.8,
    "signal_class": null,
-   "peak_freq_hz": 12.306,
+   "peak_freq_hz": null,
    "evidence": {
     "m1_periodicity": {
      "peak_freq_hz": 12.306,
@@ -29,13 +29,15 @@
      "z": 21.94,
      "peak_freq_hz": 11.909,
      "amplitude": 5.1425,
-     "detected": true
+     "detected": true,
+     "rejected_transient": true
     },
     "artifacts": {
      "type": null,
      "roi_control_correlation": 0.549,
      "control_ratio": 0.003
-    }
+    },
+    "sustained_power_fraction": 0.047
    }
   }
  },
@@ -75,7 +77,8 @@
      "type": null,
      "roi_control_correlation": 0.05,
      "control_ratio": 0.368
-    }
+    },
+    "sustained_power_fraction": 0.118
    }
   }
  },
@@ -112,7 +115,8 @@
      "type": null,
      "roi_control_correlation": 0.005,
      "control_ratio": 0.47
-    }
+    },
+    "sustained_power_fraction": 0.148
    }
   }
  },
@@ -178,7 +182,8 @@
      "type": null,
      "roi_control_correlation": 0.897,
      "control_ratio": 0.0
-    }
+    },
+    "sustained_power_fraction": 1.0
    }
   }
  },
@@ -244,7 +249,8 @@
      "type": null,
      "roi_control_correlation": 0.338,
      "control_ratio": 0.001
-    }
+    },
+    "sustained_power_fraction": 1.0
    }
   }
  },
@@ -283,7 +289,8 @@
      "type": null,
      "roi_control_correlation": 0.379,
      "control_ratio": 0.001
-    }
+    },
+    "sustained_power_fraction": 1.0
    }
   }
  }

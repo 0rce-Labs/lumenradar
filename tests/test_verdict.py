@@ -34,7 +34,13 @@ def test_clean_clip_is_clean(tmp_path):
     v = build_verdict(extract_series(path, roi=_light_roi()), extract_series(path))
     assert v.status == "clean"
     assert v.signal_class is None
-    assert set(v.evidence) == {"m1_periodicity", "m2_burst", "m3_baseline", "artifacts"}
+    assert set(v.evidence) == {
+        "m1_periodicity",
+        "m2_burst",
+        "m3_baseline",
+        "artifacts",
+        "sustained_power_fraction",
+    }
 
 
 def test_noisy_clip_is_clean(tmp_path):
