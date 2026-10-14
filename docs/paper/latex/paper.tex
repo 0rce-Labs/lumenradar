@@ -135,7 +135,11 @@ beacon positives; report ROC at FPR $\le 5\%$}
 Config: 30\,fps, 6\,s clips, structured background scene, 16$\times$16 LED,
 mp4v round-trip, 5 seeds per amplitude, 10 clean seeds. Detection floor
 (2\,Hz sine, TPR $5/5$ from): \textbf{4 gray levels p-p}; clean FPR
-\textbf{0/10}. End-to-end: clean/noisy $\rightarrow$ clean; blink pattern
+\textbf{0/10}. Frequency sweep ($\sim$76 gray levels p-p, 3 seeds/frequency):
+TPR $3/3$ at every frequency from 0.5 to 14\,Hz with the peak recovered at the
+true frequency; at 15\,Hz the mp4 codec itself destroys the signal (amplitude
+drops to $\approx$0.1 gray), so the practical band edge is codec-bound, not
+detector-bound. End-to-end: clean/noisy $\rightarrow$ clean; blink pattern
 $(1,1,2,1,2,\dots)$ $\rightarrow$ \textsf{signal\_detected} with symbol counts
 recovered exactly after codec; whole-frame oscillation $\rightarrow$
 \textsf{camera\_artifact}. Runtime: $\sim$12--16$\times$ realtime on an

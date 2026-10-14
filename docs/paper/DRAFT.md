@@ -96,11 +96,16 @@ Config: 640×480 scene with structured background, LED ROI 16×16, 30 fps,
 - Detection floor (2 Hz sine, TPR 5/5 from): **4 gray levels peak-to-peak**;
   partial detection at 2; amp-gate correctly rejects ≤ 1.
 - Clean FPR: **0/10** at the `suspicious` threshold.
+- Frequency sweep (~76 gray p-p, 3 seeds/freq): TPR 3/3 at every frequency
+  0.5–14 Hz, peaks recovered at the true frequency; at 15 Hz the mp4 codec
+  itself destroys the signal (≈0.1 gray after round-trip) — the practical
+  band edge is codec-bound, not detector-bound.
 - End-to-end classes: clean/noisy → clean; 2 Hz → periodic; (1,1,2,1,2,…)
   blink pattern → signal_detected, blink_count, symbol counts recovered
   exactly after codec; whole-frame oscillation → camera_artifact (AE).
-- Limits: 30 fps Nyquist caps the band at 15 Hz; PWM-adjacent channels are
-  best-effort; codec I-frame breathing is the dominant artifact class.
+- Runtime: ~12–16× realtime on an ARM aarch64 core (30 s clip in 2.2 s).
+- Limits: codec I-frame breathing is the dominant artifact class; the 15 Hz
+  Nyquist edge is codec-bound; PWM-adjacent channels are best-effort.
 
 *These numbers are synthetic; real-camera datasets (rolling shutter, real AE,
 sensor noise) are expected to shift the floor — that measurement is the
