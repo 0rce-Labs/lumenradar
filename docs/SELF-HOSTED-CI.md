@@ -33,6 +33,19 @@ gh run view <run-id> --repo 0rce-Labs/lumenradar --json conclusion
 First green run on the self-hosted runner: run 38589856831 (commit 8eab065),
 conclusion `success`.
 
+## Branch protection trade-off (current state)
+
+`main` is protected with **no force-push, no deletions, linear history
+required** — but there is NO required CI status check. Reason: this runner
+must not execute `pull_request` events (public-repo security rule above), so
+a required `test` check could never be satisfied on PR branches and every
+PR would be permanently BLOCKED. Documented as a known trade-off; the suite
+still runs on every `main` push.
+
+If the org unlocks GitHub-hosted runners later, restore `pull_request` +
+hosted matrix in the workflow and add the required `test` context back via
+`PUT /repos/{owner}/{repo}/branches/main/protection`.
+
 ## When billing unlocks
 
 You can migrate back to hosted runners by reverting workflow `runs-on` to
