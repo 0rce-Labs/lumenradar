@@ -10,3 +10,8 @@ data/
 *.mp4
 *.avi
 *.mkv
+docs/paper/latex/paper.aux
+docs/paper/latex/paper.log
+docs/paper/latex/paper.out
+docs/paper/latex/paper.bbl
+docs/paper/latex/paper.blg

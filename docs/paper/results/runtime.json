@@ -1,0 +1,48 @@
+{
+  "benchmark": "runtime",
+  "config": {
+    "fps": 30.0,
+    "repeats": 3,
+    "stat": "min",
+    "machine": "oracle-aarch64"
+  },
+  "rows": [
+    {
+      "clip": "clean",
+      "duration_s": 6.0,
+      "wall_s": 0.496,
+      "realtime_factor": 12.09
+    },
+    {
+      "clip": "burst",
+      "duration_s": 6.0,
+      "wall_s": 0.433,
+      "realtime_factor": 13.86
+    },
+    {
+      "clip": "clean",
+      "duration_s": 12.0,
+      "wall_s": 0.929,
+      "realtime_factor": 12.92
+    },
+    {
+      "clip": "burst",
+      "duration_s": 12.0,
+      "wall_s": 0.762,
+      "realtime_factor": 15.75
+    },
+    {
+      "clip": "clean",
+      "duration_s": 30.0,
+      "wall_s": 2.377,
+      "realtime_factor": 12.62
+    },
+    {
+      "clip": "burst",
+      "duration_s": 30.0,
+      "wall_s": 2.208,
+      "realtime_factor": 13.59
+    }
+  ],
+  "note": "synthetic clips; absolute numbers are machine-relative"
+}

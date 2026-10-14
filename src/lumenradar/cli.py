@@ -41,6 +41,12 @@ def build_parser() -> argparse.ArgumentParser:
     a.add_argument(
         "--json-out", type=Path, default=None, help="Also write the JSON report to this path"
     )
+    a.add_argument(
+        "--plot",
+        type=Path,
+        default=None,
+        help="Render a series + PSD figure to this path (.png or .pdf)",
+    )
 
     b = sub.add_parser(
         "beacon",
@@ -96,6 +102,23 @@ def cmd_analyze(args: argparse.Namespace) -> int:
     except (FileNotFoundError, ValueError) as exc:
         _emit({"error": str(exc)}, None)
         return 2
+
+    if args.plot is not None:
+        from .plot import render_plot
+        from .roi import ROI as _ROI
+        from .signal import extract_series as _extract
+
+        rd = report["roi"]
+        roi2 = (
+            _ROI(int(rd["x"]), int(rd["y"]), int(rd["w"]), int(rd["h"]))
+            if rd["mode"] in ("manual", "auto")
+            else None
+        )
+        s2 = _extract(args.video, roi=roi2, max_fps=args.max_fps)
+        c2 = _extract(args.video, roi=None, exclude=roi2, max_fps=args.max_fps)
+        render_plot(s2, c2, args.plot, title=f"lumenradar — {args.video}")
+        report["plot"] = str(args.plot)
+
     _emit(report, args.json_out)
     return 0
 
