@@ -45,6 +45,17 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
+def ring_box(width: int, height: int, keep: float = 0.8) -> ROI:
+    """Central box to EXCLUDE so the remaining border ring is a spatial control.
+
+    Whole-frame phenomena (auto-exposure hunting) modulate the ring together
+    with the center; a localized light source does not. Used in fullframe
+    mode, where no ROI exists to exclude.
+    """
+    mx, my = int(width * (1 - keep) / 2), int(height * (1 - keep) / 2)
+    return ROI(mx, my, width - 2 * mx, height - 2 * my)
+
+
 def _resolve_roi(video: str, manual: ROI | None) -> tuple[ROI | None, str]:
     """ROI resolution order: manual override > stable auto-LED > full-frame."""
     if manual is not None:
@@ -81,11 +92,16 @@ def cmd_analyze(args: argparse.Namespace) -> int:
     try:
         roi, mode = _resolve_roi(args.video, args.roi)
         series = extract_series(args.video, roi=roi, max_fps=args.max_fps)
-        control = (
-            extract_series(args.video, roi=None, exclude=roi, max_fps=args.max_fps)
-            if roi
-            else None
-        )
+        if roi:
+            control = extract_series(args.video, roi=None, exclude=roi, max_fps=args.max_fps)
+        else:
+            # Fullframe mode: use the border ring as a spatial control channel.
+            control = extract_series(
+                args.video,
+                roi=None,
+                exclude=ring_box(meta.width, meta.height),
+                max_fps=args.max_fps,
+            )
     except (FileNotFoundError, ValueError) as exc:
         _emit({"error": str(exc)}, None)
         return 2
