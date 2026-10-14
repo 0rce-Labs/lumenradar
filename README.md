@@ -40,6 +40,11 @@ camera; live analysis uses any OpenCV-compatible webcam.
 lumenradar analyze recording.mp4              # JSON report to stdout
 lumenradar analyze clip.mp4 --roi 100,40,24,18
 lumenradar analyze clip.mp4 --max-fps 15      # subsample high-fps sources
+
+# Dataset labeling (your own hardware only — see docs/THREAT-MODEL.md):
+lumenradar beacon --pattern blink --duration 30   # fixed calibration pattern on screen
+lumenradar manifest ./dataset --json-out manifest.json
+lumenradar evaluate ./dataset                     # confusion matrix over pos_/neg_ clips
 ```
 
 ## Development
@@ -56,9 +61,10 @@ in-process (`lumenradar.synth`).
 
 ## Status
 
-Faz 1 (alpha): video ingestion, LED ROI localization, luminance time-series, CLI.
-Faz 2 next: detection engine (periodicity / burst-symbol / session-baseline) +
-artifact rejection (auto-exposure, mains flicker).
+v0.2.0 — detection engine live: M1 band periodicity, M2 burst pulse-count,
+M3 session baseline, artifact rejection (AE-hunting + mains aliases), verdict
+fusion, calibration beacon, dataset manifest + batch evaluation.
+Next: real-hardware dataset evaluation (docs/DATASET.md), paper draft.
 
 ## License
 

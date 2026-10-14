@@ -5,4 +5,4 @@ and pulse-symbol structure indicating a covert optical channel. It contains
 no transmitter and no message-encoding path (see docs/THREAT-MODEL.md).
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

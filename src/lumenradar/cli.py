@@ -1,4 +1,4 @@
-"""Command-line interface for LumenRadar (analyze / probe)."""
+"""Command-line interface for LumenRadar (analyze / beacon / manifest / evaluate / probe)."""
 
 from __future__ import annotations
 
@@ -8,13 +8,10 @@ import sys
 from pathlib import Path
 
 from . import __version__
-from .ingest import probe as probe_source
-from .roi import ROI, manual_roi, stable_roi
-from .signal import extract_series
-from .verdict import build_verdict
+from .pipeline import analyze_source
 
 
-def _parse_roi(text: str) -> ROI:
+def _parse_roi(text: str) -> tuple[int, int, int, int]:
     parts = [p.strip() for p in text.split(",")]
     if len(parts) != 4:
         raise argparse.ArgumentTypeError("ROI must be 'x,y,w,h'")
@@ -22,7 +19,11 @@ def _parse_roi(text: str) -> ROI:
         x, y, w, h = (int(p) for p in parts)
     except ValueError as exc:
         raise argparse.ArgumentTypeError("ROI values must be integers") from exc
-    return manual_roi((x, y, w, h))
+    if x < 0 or y < 0:
+        raise argparse.ArgumentTypeError("ROI origin must be non-negative")
+    if w <= 0 or h <= 0:
+        raise argparse.ArgumentTypeError("ROI size must be positive")
+    return (x, y, w, h)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -30,6 +31,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="lumenradar",
         description="Detect covert optical signaling in camera footage (defensive tooling).",
     )
+    p.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     sub = p.add_subparsers(dest="command", required=True)
 
     a = sub.add_parser("analyze", help="Analyze a video file for covert optical signaling.")
@@ -40,30 +42,42 @@ def build_parser() -> argparse.ArgumentParser:
         "--json-out", type=Path, default=None, help="Also write the JSON report to this path"
     )
 
+    b = sub.add_parser(
+        "beacon",
+        help="Play a fixed calibration pattern on screen (dataset labeling ONLY).",
+        description=(
+            "Display a fixed, documented test pattern for recording positive-class "
+            "samples on your own hardware. No input capture, no network, no LLM — "
+            "see docs/THREAT-MODEL.md."
+        ),
+    )
+    b.add_argument(
+        "--pattern", choices=("blink", "sine2", "square5"), default="blink", help="Fixed pattern"
+    )
+    b.add_argument("--duration", type=float, default=30.0, help="Seconds to play (default 30)")
+    b.add_argument("--fps", type=float, default=30.0, help="Pattern frame rate (default 30)")
+    b.add_argument("--size", type=int, default=320, help="Window size in px (default 320)")
+
+    m = sub.add_parser("manifest", help="Build a SHA-256 manifest for a clip directory.")
+    m.add_argument("directory", help="Directory containing pos_/neg_ prefixed clips")
+    m.add_argument("--json-out", type=Path, default=None, help="Write manifest JSON to this path")
+
+    e = sub.add_parser(
+        "evaluate", help="Analyze every manifest clip and report a confusion matrix."
+    )
+    e.add_argument("directory", help="Directory containing pos_/neg_ prefixed clips")
+    e.add_argument(
+        "--threshold",
+        choices=("suspicious", "signal_detected"),
+        default="suspicious",
+        help="Verdict level counted as a positive prediction (default: suspicious)",
+    )
+    e.add_argument("--max-fps", type=float, default=None, help="Subsample sources to this FPS")
+    e.add_argument("--json-out", type=Path, default=None, help="Write evaluation JSON to this path")
+
     pr = sub.add_parser("probe", help="Print video metadata as JSON.")
     pr.add_argument("video", help="Path to a video file")
     return p
-
-
-def ring_box(width: int, height: int, keep: float = 0.8) -> ROI:
-    """Central box to EXCLUDE so the remaining border ring is a spatial control.
-
-    Whole-frame phenomena (auto-exposure hunting) modulate the ring together
-    with the center; a localized light source does not. Used in fullframe
-    mode, where no ROI exists to exclude.
-    """
-    mx, my = int(width * (1 - keep) / 2), int(height * (1 - keep) / 2)
-    return ROI(mx, my, width - 2 * mx, height - 2 * my)
-
-
-def _resolve_roi(video: str, manual: ROI | None) -> tuple[ROI | None, str]:
-    """ROI resolution order: manual override > stable auto-LED > full-frame."""
-    if manual is not None:
-        return manual, "manual"
-    auto = stable_roi(video)
-    if auto is not None:
-        return auto, "auto"
-    return None, "fullframe"
 
 
 def _emit(report: dict, json_out: Path | None) -> None:
@@ -75,67 +89,74 @@ def _emit(report: dict, json_out: Path | None) -> None:
 
 def cmd_analyze(args: argparse.Namespace) -> int:
     try:
-        meta = probe_source(args.video)
-    except FileNotFoundError as exc:
-        _emit({"error": str(exc)}, None)
-        return 2
+        from .roi import manual_roi
 
-    if args.roi is not None and (
-        args.roi.x < 0
-        or args.roi.y < 0
-        or args.roi.x + args.roi.w > meta.width
-        or args.roi.y + args.roi.h > meta.height
-    ):
-        _emit({"error": f"ROI exceeds frame {meta.width}x{meta.height}"}, None)
-        return 2
-
-    try:
-        roi, mode = _resolve_roi(args.video, args.roi)
-        series = extract_series(args.video, roi=roi, max_fps=args.max_fps)
-        if roi:
-            control = extract_series(args.video, roi=None, exclude=roi, max_fps=args.max_fps)
-        else:
-            # Fullframe mode: use the border ring as a spatial control channel.
-            control = extract_series(
-                args.video,
-                roi=None,
-                exclude=ring_box(meta.width, meta.height),
-                max_fps=args.max_fps,
-            )
+        roi = manual_roi(args.roi) if args.roi is not None else None
+        report = analyze_source(args.video, manual_roi=roi, max_fps=args.max_fps)
     except (FileNotFoundError, ValueError) as exc:
         _emit({"error": str(exc)}, None)
         return 2
-
-    resid = series.detrend()
-    verdict = build_verdict(series, control)
-    report = {
-        "tool": "lumenradar",
-        "version": __version__,
-        "source": {
-            "path": meta.source,
-            "width": meta.width,
-            "height": meta.height,
-            "fps": round(meta.fps, 3),
-            "frame_count": meta.frame_count,
-        },
-        "roi": {"mode": mode, **(roi.as_dict() if roi is not None else {})},
-        "series": {
-            "n": series.n,
-            "duration_s": round(series.duration, 3),
-            "effective_fps": round(series.effective_fps, 2),
-        },
-        "stats": {
-            "residual_std": round(float(resid.std()), 4),
-            "residual_min": round(float(resid.min()), 4),
-            "residual_max": round(float(resid.max()), 4),
-        },
-        "detection": verdict.as_dict(),
-    }
     _emit(report, args.json_out)
     return 0
 
 
+def cmd_beacon(args: argparse.Namespace) -> int:
+    from .beacon import PATTERNS, play_screen, waveform
+
+    levels = waveform(args.pattern, args.duration, args.fps)
+    try:
+        play_screen(levels, args.fps, size=args.size)
+    except Exception as exc:  # noqa: BLE001 - cv2 raises assorted GUI errors
+        _emit(
+            {
+                "error": f"cannot open beacon window (needs a display server): {exc}",
+                "hint": "run this on the machine whose screen the camera records",
+                "patterns": list(PATTERNS),
+            },
+            None,
+        )
+        return 2
+    return 0
+
+
+def cmd_manifest(args: argparse.Namespace) -> int:
+    from .dataset import build_manifest
+
+    try:
+        rows = build_manifest(args.directory)
+    except FileNotFoundError as exc:
+        _emit({"error": str(exc)}, None)
+        return 2
+    _emit(
+        {
+            "directory": str(args.directory),
+            "count": len(rows),
+            "rows": [
+                {"path": r.path, "label": r.label, "sha256_16": r.sha256_16, "bytes": r.bytes}
+                for r in rows
+            ],
+        },
+        args.json_out,
+    )
+    return 0
+
+
+def cmd_evaluate(args: argparse.Namespace) -> int:
+    from .dataset import build_manifest, evaluate
+
+    try:
+        rows = build_manifest(args.directory)
+        result = evaluate(rows, threshold=args.threshold, max_fps=args.max_fps)
+    except (FileNotFoundError, ValueError) as exc:
+        _emit({"error": str(exc)}, None)
+        return 2
+    _emit(result, args.json_out)
+    return 0
+
+
 def cmd_probe(args: argparse.Namespace) -> int:
+    from .ingest import probe as probe_source
+
     try:
         meta = probe_source(args.video)
     except FileNotFoundError as exc:
@@ -157,12 +178,14 @@ def cmd_probe(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    if args.command == "analyze":
-        return cmd_analyze(args)
-    if args.command == "probe":
-        return cmd_probe(args)
-    parser.error(f"unknown command: {args.command}")
-    return 2
+    handlers = {
+        "analyze": cmd_analyze,
+        "beacon": cmd_beacon,
+        "manifest": cmd_manifest,
+        "evaluate": cmd_evaluate,
+        "probe": cmd_probe,
+    }
+    return handlers[args.command](args)
 
 
 if __name__ == "__main__":
