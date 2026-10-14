@@ -14,7 +14,8 @@
 
 \title{Detecting Covert Optical Signaling in Camera Footage:\\
 A DSP Pipeline for Blink-Count and Brightness Channels}
-\author{Samet Y{\i}lmaz Temel \and 0rce-Labs\\
+\author{Samet Y{\i}lmaz Temel\\
+0rce-Labs\\
 \url{https://github.com/0rce-Labs/lumenradar}}
 \date{October 2026 --- working draft}
 
@@ -141,11 +142,14 @@ renders as a $\sim$300\,px solid bright square beyond the small-LED ROI
 heuristic (fixed with a class-aware beacon-square scan), low-duty blink
 patterns need a wider ROI probe window (first ON frame at 0.65\,s), and
 variable-frame-rate capture turns a strong tone's spectral skirt wide enough
-to defeat local-floor ratios (fixed with a strong-amplitude$\,+\,$harmonic
+to defeat local-floor ratios (fixed with a strong-amplitude$+{}$harmonic
 bypass, and a sustained-power gate that rejects step-edge transients ---
-measured 0.05 vs 1.00 sustained-fraction separation). Remaining for the
-journal version: scaled-up dataset (2 devices $\times$ 3 lighting, $\ge$60
-clips) and formal ROC.
+measured 0.05 vs 1.00 sustained-fraction separation). Real-hardware recordings
+are not redistributed; a SHA-256 manifest and all generation/analysis scripts
+are provided for independent verification, and clips are available from the
+author on reasonable request (see \texttt{docs/DATASET-POLICY.md}). Remaining
+for the journal version: scaled-up dataset (2 devices $\times$ 3 lighting,
+$\ge$60 clips) and formal ROC.
 
 \section{Synthetic Calibration (preliminary)}
 Config: 30\,fps, 6\,s clips, structured background scene, 16$\times$16 LED,
